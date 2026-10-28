@@ -46,6 +46,7 @@ def render_pair(index, name, first, second):
     first_name = html.escape(first.name, quote=True)
     second_name = html.escape(second.name, quote=True)
     return f'''<section class="comparison" aria-label="{index + 1}. {title}">
+  <h2 class="comparison-title">{title}</h2>
   <div class="stage" style="--split: 50%">
     <div class="image-layer second">
       <img src="{image_uri(second)}" alt="{second_name}" draggable="false">
@@ -74,7 +75,9 @@ PAGE_START = '''<!doctype html>
   body { margin: 0; background: #11151c; color: #eef2f7;
          font: 14px/1.5 system-ui, sans-serif; }
   .comparison { height: 100vh; height: 100svh; display: flex;
-                flex-direction: column; border-bottom: 1px solid #435066; }
+                flex-direction: column; }
+  .comparison-title { margin: 0; padding: 10px 16px; font-size: 20px; }
+  .comparison-separator { margin: 0; border: 0; height: 4px; background: #435066; }
   .stage { position: relative; flex: 1; min-height: 0; overflow: hidden;
            background: #080b10; }
   /* Both images retain the full stage dimensions; clipping never resizes either. */
@@ -186,6 +189,8 @@ def main():
         with args.output.open('w', encoding='utf-8') as output:
             output.write(PAGE_START)
             for index, (name, first, second) in enumerate(pairs):
+                if index:
+                    output.write('<hr class="comparison-separator">\n')
                 output.write(render_pair(index, name, first, second))
             output.write(PAGE_END)
     except (OSError, ValueError) as error:
