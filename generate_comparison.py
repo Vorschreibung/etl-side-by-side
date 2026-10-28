@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Build a standalone HTML page comparing timestamped screenshot pairs."""
+"""Build an HTML page comparing timestamped screenshot pairs."""
 
 import argparse
-import base64
 import html
+import os
 from pathlib import Path
 import re
 import sys
+from urllib.parse import quote
 
 
 IMAGE_NAME = re.compile(r"(?P<name>.+)_shot_(?P<timestamp>\d+)\.png", re.IGNORECASE)
@@ -35,13 +36,13 @@ def find_pairs(directory):
     return pairs
 
 
-def image_uri(path):
-    """Embed image bytes so the resulting HTML has no external dependencies."""
-    encoded = base64.b64encode(path.read_bytes()).decode('ascii')
-    return f"data:image/png;base64,{encoded}"
+def image_uri(path, output_directory):
+    """Resolve and URL-encode screenshot paths relative to the generated page."""
+    relative = Path(os.path.relpath(path.resolve(), output_directory.resolve()))
+    return quote(relative.as_posix())
 
 
-def render_pair(index, name, first, second):
+def render_pair(index, name, first, second, output_directory):
     title = html.escape(name)
     first_name = html.escape(first.name, quote=True)
     second_name = html.escape(second.name, quote=True)
@@ -49,11 +50,11 @@ def render_pair(index, name, first, second):
   <h2 class="comparison-title">{title}</h2>
   <div class="stage" style="--split: 50%">
     <div class="image-layer second">
-      <img src="{image_uri(second)}" alt="{second_name}" draggable="false">
+      <img src="{image_uri(second, output_directory)}" alt="{second_name}" draggable="false">
       <span class="renderer vulkan">VULKAN</span>
     </div>
     <div class="image-layer first">
-      <img src="{image_uri(first)}" alt="{first_name}" draggable="false">
+      <img src="{image_uri(first, output_directory)}" alt="{first_name}" draggable="false">
       <span class="renderer opengl">OPENGL</span>
     </div>
     <div class="divider" aria-hidden="true"><span>&lsaquo;&nbsp;&rsaquo;</span></div>
@@ -179,19 +180,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('directory', nargs='?', type=Path, default=root / 'side-by-side',
                         help='Screenshot directory (default: side-by-side beside this script)')
-    parser.add_argument('-o', '--output', type=Path, default=root / 'comparisons.html',
-                        help='Output HTML path (default: comparisons.html beside this script)')
+    parser.add_argument('-o', '--output', type=Path, default=root / 'index.html',
+                        help='Output HTML path (default: index.html beside this script)')
     args = parser.parse_args()
 
     try:
         pairs = find_pairs(args.directory)
-        # Stream each section to avoid holding the entire embedded page in memory.
         with args.output.open('w', encoding='utf-8') as output:
             output.write(PAGE_START)
             for index, (name, first, second) in enumerate(pairs):
                 if index:
                     output.write('<hr class="comparison-separator">\n')
-                output.write(render_pair(index, name, first, second))
+                output.write(render_pair(index, name, first, second, args.output.parent))
             output.write(PAGE_END)
     except (OSError, ValueError) as error:
         print(f"Error: {error}", file=sys.stderr)

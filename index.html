@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screenshot comparisons</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #11151c; color: #eef2f7;
+         font: 14px/1.5 system-ui, sans-serif; }
+  .comparison { height: 100vh; height: 100svh; display: flex;
+                flex-direction: column; }
+  .comparison-title { margin: 0; padding: 10px 16px; font-size: 20px; }
+  .comparison-separator { margin: 0; border: 0; height: 4px; background: #435066; }
+  .stage { position: relative; flex: 1; min-height: 0; overflow: hidden;
+           background: #080b10; }
+  /* Both images retain the full stage dimensions; clipping never resizes either. */
+  .image-layer { position: absolute; inset: 0; pointer-events: none; }
+  .stage img { position: absolute; inset: 0; width: 100%; height: 100%;
+               object-fit: contain; user-select: none; pointer-events: none; }
+  .first { clip-path: inset(0 calc(100% - var(--split)) 0 0); }
+  .second { clip-path: inset(0 0 0 var(--split)); }
+  /* Labels belong to their clipped image and stay inside its letterboxed bounds. */
+  .renderer { position: absolute; top: calc(var(--image-top, 0px) + 16px);
+              font-size: clamp(18px, 3vw, 32px); font-weight: 800;
+              text-shadow: 1px 1px 2px #000, 0 0 6px #000, 0 0 12px #000; }
+  .opengl { left: calc(var(--image-left, 0px) + 16px); color: #00ff00; }
+  .vulkan { right: calc(var(--image-left, 0px) + 16px); color: #ff0000; }
+  .divider { position: absolute; top: 0; bottom: 0; left: var(--split);
+             width: 2px; background: white; transform: translateX(-50%);
+             box-shadow: 0 0 4px #000; pointer-events: none; }
+  .divider span { position: absolute; top: 50%; left: 50%;
+                  transform: translate(-50%, -50%); width: 44px; height: 44px;
+                  border: 2px solid white; border-radius: 50%; background: #182334;
+                  display: grid; place-items: center; font-size: 24px; }
+  /* The native range supplies focus and keyboard behavior; pointer math below
+     makes the split reach both exact edges regardless of thumb dimensions. */
+  .slider { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0;
+            opacity: 0; cursor: ew-resize; touch-action: pan-y; }
+  .stage:focus-within { outline: 3px solid #70b7ff; outline-offset: -3px; }
+</style>
+</head>
+<body>
+<main aria-label="Screenshot comparisons. Drag to compare, or focus a slider and use arrow keys.">
+<section class="comparison" aria-label="1. etl_gamma_3">
+  <h2 class="comparison-title">etl_gamma_3</h2>
+  <div class="stage" style="--split: 50%">
+    <div class="image-layer second">
+      <img src="side-by-side/etl_gamma_3_shot_1793205723.png" alt="etl_gamma_3_shot_1793205723.png" draggable="false">
+      <span class="renderer vulkan">VULKAN</span>
+    </div>
+    <div class="image-layer first">
+      <img src="side-by-side/etl_gamma_3_shot_1793205719.png" alt="etl_gamma_3_shot_1793205719.png" draggable="false">
+      <span class="renderer opengl">OPENGL</span>
+    </div>
+    <div class="divider" aria-hidden="true"><span>&lsaquo;&nbsp;&rsaquo;</span></div>
+    <input class="slider" type="range" min="0" max="100" step="0.1" value="50"
+      aria-label="Image split for etl_gamma_3. Left is the first image; right is the second."
+      aria-valuetext="50% first image, 50% second image">
+  </div>
+</section><hr class="comparison-separator">
+<section class="comparison" aria-label="2. etl_puddle">
+  <h2 class="comparison-title">etl_puddle</h2>
+  <div class="stage" style="--split: 50%">
+    <div class="image-layer second">
+      <img src="side-by-side/etl_puddle_shot_1793208615.png" alt="etl_puddle_shot_1793208615.png" draggable="false">
+      <span class="renderer vulkan">VULKAN</span>
+    </div>
+    <div class="image-layer first">
+      <img src="side-by-side/etl_puddle_shot_1793208611.png" alt="etl_puddle_shot_1793208611.png" draggable="false">
+      <span class="renderer opengl">OPENGL</span>
+    </div>
+    <div class="divider" aria-hidden="true"><span>&lsaquo;&nbsp;&rsaquo;</span></div>
+    <input class="slider" type="range" min="0" max="100" step="0.1" value="50"
+      aria-label="Image split for etl_puddle. Left is the first image; right is the second."
+      aria-valuetext="50% first image, 50% second image">
+  </div>
+</section><hr class="comparison-separator">
+<section class="comparison" aria-label="3. etl_radar_wolffog">
+  <h2 class="comparison-title">etl_radar_wolffog</h2>
+  <div class="stage" style="--split: 50%">
+    <div class="image-layer second">
+      <img src="side-by-side/etl_radar_wolffog_shot_1793205871.png" alt="etl_radar_wolffog_shot_1793205871.png" draggable="false">
+      <span class="renderer vulkan">VULKAN</span>
+    </div>
+    <div class="image-layer first">
+      <img src="side-by-side/etl_radar_wolffog_shot_1793205867.png" alt="etl_radar_wolffog_shot_1793205867.png" draggable="false">
+      <span class="renderer opengl">OPENGL</span>
+    </div>
+    <div class="divider" aria-hidden="true"><span>&lsaquo;&nbsp;&rsaquo;</span></div>
+    <input class="slider" type="range" min="0" max="100" step="0.1" value="50"
+      aria-label="Image split for etl_radar_wolffog. Left is the first image; right is the second."
+      aria-valuetext="50% first image, 50% second image">
+  </div>
+</section>
+</main>
+<script>
+  document.querySelectorAll('.slider').forEach(slider => {
+    const stage = slider.parentElement;
+    let activePointer = null;
+
+    // Match each label's inset to the image area produced by object-fit: contain.
+    stage.querySelectorAll('.image-layer').forEach(layer => {
+      const image = layer.querySelector('img');
+      function positionLabel() {
+        if (!image.naturalWidth || !image.naturalHeight) return;
+        const scale = Math.min(stage.clientWidth / image.naturalWidth,
+          stage.clientHeight / image.naturalHeight);
+        layer.style.setProperty('--image-left',
+          `${(stage.clientWidth - image.naturalWidth * scale) / 2}px`);
+        layer.style.setProperty('--image-top',
+          `${(stage.clientHeight - image.naturalHeight * scale) / 2}px`);
+      }
+      image.addEventListener('load', positionLabel);
+      new ResizeObserver(positionLabel).observe(stage);
+      positionLabel();
+    });
+
+    function update() {
+      const value = Number(slider.value);
+      stage.style.setProperty('--split', `${value}%`);
+      slider.setAttribute('aria-valuetext',
+        `${value}% first image, ${Number((100 - value).toFixed(1))}% second image`);
+    }
+
+    function move(event) {
+      const bounds = stage.getBoundingClientRect();
+      slider.value = Math.max(0, Math.min(100,
+        (event.clientX - bounds.left) / bounds.width * 100));
+      update();
+    }
+
+    slider.addEventListener('input', update);
+    slider.addEventListener('pointerdown', event => {
+      if (event.button !== 0 || activePointer !== null) return;
+      event.preventDefault();
+      activePointer = event.pointerId;
+      slider.focus({ preventScroll: true });
+      slider.setPointerCapture(event.pointerId);
+      move(event);
+    });
+    slider.addEventListener('pointermove', event => {
+      if (event.pointerId === activePointer) move(event);
+    });
+    slider.addEventListener('pointerup', event => {
+      if (event.pointerId !== activePointer) return;
+      move(event);
+      slider.releasePointerCapture(event.pointerId);
+      activePointer = null;
+    });
+    slider.addEventListener('lostpointercapture', () => { activePointer = null; });
+  });
+</script>
+</body>
+</html>
